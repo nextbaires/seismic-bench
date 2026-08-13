@@ -26,26 +26,31 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          python-version: ${{ matrix.python-version }}
 
+      # Into a venv, not --system: the runner's interpreter is externally
+      # managed (PEP 668) and rejects --system outright.
       - name: Install
-        run: uv pip install --system -e ".[dev]"
+        run: |
+          uv venv
+          uv pip install -e ".[dev]"
 
       - name: Lint
-        run: ruff check .
+        run: uv run ruff check .
 
       # Everything below runs against the committed sample catalog. No network,
       # no credentials — if CI needs the internet to verify a benchmark, the
       # benchmark is not reproducible.
       - name: Test
-        run: pytest -q
+        run: uv run pytest -q
 
       - name: Run baselines end to end
         run: |
-          python -m seismic_bench.bench.run --model poisson
-          python -m seismic_bench.bench.run --model etas
+          uv run python -m seismic_bench.bench.run --model poisson
+          uv run python -m seismic_bench.bench.run --model etas
 
       - name: Rebuild leaderboard
-        run: python -m seismic_bench.leaderboard
+        run: uv run python -m seismic_bench.leaderboard
 
       - name: Fail if the leaderboard drifted
         # The committed results.json must match what the code produces from the
