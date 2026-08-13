@@ -34,6 +34,36 @@ def protocol_key(run: dict) -> str:
     )
 
 
+#: Significant figures kept in the published file.
+#:
+#: Summing 3,600 cells across 36 windows gives results that differ in the 13th
+#: significant digit between platforms, because numpy builds against different
+#: BLAS libraries and floating-point addition is not associative. That is noise,
+#: not a result — but the committed file is diffed against a fresh run in CI, so
+#: unrounded values would make the check fail on every machine that is not the
+#: one that generated it, and the check would get switched off within a week.
+#:
+#: Nine figures sits well clear of the drift (13th) and well clear of anything
+#: scientifically meaningful: two models separated at the ninth significant
+#: figure of their log-likelihood are not distinguishable by this benchmark.
+SIGNIFICANT_FIGURES = 9
+
+
+def _round(value):
+    """Round floats to SIGNIFICANT_FIGURES, recursing into containers."""
+    if isinstance(value, bool) or value is None:
+        return value
+    if isinstance(value, float):
+        return value if value != value or value in (float("inf"), float("-inf")) else float(
+            f"{value:.{SIGNIFICANT_FIGURES}g}"
+        )
+    if isinstance(value, dict):
+        return {k: _round(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_round(v) for v in value]
+    return value
+
+
 def collect(runs_dir: Path = RUNS_DIR) -> list[dict]:
     if not runs_dir.exists():
         return []
@@ -60,7 +90,7 @@ def build(runs: list[dict]) -> dict:
             "time_dependent": run["description"].get("time_dependent"),
             "description": run["description"],
         }
-        groups.setdefault(protocol_key(run), []).append(entry)
+        groups.setdefault(protocol_key(run), []).append(_round(entry))
 
     # Higher log-likelihood is better.
     for entries in groups.values():
