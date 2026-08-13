@@ -1,0 +1,29 @@
+# Turns a domain proposal into a reviewed pull request.
+#
+# The label gate is the security boundary: anyone can file an issue, only a
+# maintainer can label one. Do not change this to `issues: [opened]` — that
+# would let any account on the internet start a billed agent run against this
+# repository.
+#
+# See https://github.com/nextbaires/expert-loop
+
+name: Expert loop
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  draft:
+    if: >
+      github.event.label.name == 'approved-for-drafting' &&
+      contains(github.event.issue.labels.*.name, 'proposal')
+    uses: nextbaires/expert-loop/.github/workflows/expert-loop.yml@v1
+    with:
+      domain: seismology
+      allowed-paths: "seismic_bench/ tests/ docs/"
+      test-command: "pytest -q"
+      model: claude-opus-5
+      max-turns: 40
+    secrets:
+      anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}

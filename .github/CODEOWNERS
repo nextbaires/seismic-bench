@@ -1,0 +1,8 @@
+# Every merge needs a human. The expert loop opens pull requests; it cannot
+# approve them.
+*                       @nextbaires
+
+# The evaluation protocol is the thing everyone's results depend on. A change
+# here silently invalidates every published number, so it gets read carefully.
+/seismic_bench/bench/   @nextbaires
+/.github/workflows/     @nextbaires

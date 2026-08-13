@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install
+        run: uv pip install --system -e ".[dev]"
+
+      - name: Lint
+        run: ruff check .
+
+      # Everything below runs against the committed sample catalog. No network,
+      # no credentials — if CI needs the internet to verify a benchmark, the
+      # benchmark is not reproducible.
+      - name: Test
+        run: pytest -q
+
+      - name: Run baselines end to end
+        run: |
+          python -m seismic_bench.bench.run --model poisson
+          python -m seismic_bench.bench.run --model etas
+
+      - name: Rebuild leaderboard
+        run: python -m seismic_bench.leaderboard
+
+      - name: Fail if the leaderboard drifted
+        # The committed results.json must match what the code produces from the
+        # committed sample. A pull request that changes scores has to say so in
+        # the diff rather than leaving the published numbers stale.
+        run: |
+          if ! git diff --quiet -- leaderboard/results.json; then
+            echo "::error::leaderboard/results.json is out of date."
+            echo "Run: python -m seismic_bench.leaderboard  — and commit the result."
+            git diff -- leaderboard/results.json
+            exit 1
+          fi

@@ -1,0 +1,28 @@
+Data licensing
+==============
+
+CODE in this repository is MIT licensed; see LICENSE.
+
+DERIVED DATA produced by this repository — the conformed catalog under
+data/silver/, the committed sample under data/sample/, benchmark outputs under
+leaderboard/ — is released under Creative Commons Attribution 4.0 International
+(CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+
+SOURCE DATA is not ours to license, and its own terms apply upstream of ours:
+
+  U.S. Geological Survey (ComCat / ANSS)
+    Public domain as a work of the United States Government. Attribution is
+    requested but not legally required. Cite as:
+    U.S. Geological Survey, Earthquake Hazards Program, Advanced National
+    Seismic System (ANSS) Comprehensive Catalog.
+    https://doi.org/10.5066/F7MS3QZH
+
+  EMSC-CSEM (European-Mediterranean Seismological Centre)
+    Terms at https://www.emsc-csem.org/ — verify before redistributing.
+
+  INGV (Istituto Nazionale di Geofisica e Vulcanologia)
+    CC BY 4.0. https://terremoti.ingv.it/
+
+If you redistribute a catalog assembled with this tool, carry the source
+attribution through. The people who operate the seismic networks are the reason
+any of this exists.

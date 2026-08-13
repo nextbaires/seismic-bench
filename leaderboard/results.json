@@ -1,0 +1,62 @@
+{
+  "ranked_by": "total_log_likelihood, higher is better",
+  "note": "Entries are only comparable within a protocol group. Passing the consistency tests matters independently of rank: a model can rank first on likelihood while failing the N-test, which means it gets the spatial pattern right and the event count wrong.",
+  "protocols": [
+    {
+      "protocol": "M>=3.0 30d-windows 0.2deg-cells lon[-125.0,-113.0] lat[31.0,43.0]",
+      "entries": [
+        {
+          "model": "poisson",
+          "total_log_likelihood": -13256.556943508984,
+          "mean_log_likelihood": -368.23769287524954,
+          "mean_brier": 0.004930539207906589,
+          "n_test_pass_rate": 0.6944444444444444,
+          "s_test_pass_rate": 0.8333333333333334,
+          "n_windows": 36,
+          "total_forecast": 1090.4474060128782,
+          "total_observed": 1902,
+          "parameters_fit": null,
+          "time_dependent": false,
+          "description": {
+            "model": "PoissonBaseline",
+            "smoothing_km": 50.0,
+            "min_magnitude": 3.0,
+            "background_fraction": 0.01,
+            "time_dependent": false
+          },
+          "rank": 1
+        },
+        {
+          "model": "etas",
+          "total_log_likelihood": -14247.980148263769,
+          "mean_log_likelihood": -395.77722634066026,
+          "mean_brier": 0.004784194850108063,
+          "n_test_pass_rate": 0.3888888888888889,
+          "s_test_pass_rate": 0.6111111111111112,
+          "n_windows": 36,
+          "total_forecast": 568.9798257141408,
+          "total_observed": 1902,
+          "parameters_fit": false,
+          "time_dependent": true,
+          "description": {
+            "model": "ETASBaseline",
+            "productivity_k": 0.008,
+            "alpha": 0.8,
+            "c_days": 0.02,
+            "p": 1.1,
+            "d0_km": 0.5,
+            "gamma": 0.5,
+            "q": 1.5,
+            "reference_magnitude": 3.0,
+            "max_history_days": 365.0,
+            "background_weight": 0.3,
+            "parameters_fit": false,
+            "parameter_source": "fixed literature values, Southern California; not fit to this catalog",
+            "time_dependent": true
+          },
+          "rank": 2
+        }
+      ]
+    }
+  ]
+}

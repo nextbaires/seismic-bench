@@ -1,0 +1,92 @@
+name: Domain proposal
+description: Propose a change based on your expertise. No coding required.
+title: "[proposal] "
+labels: ["proposal", "needs-domain-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        You do not need to write code, and you do not need to know how this repository is
+        built. Describe what you know in your own words and in as much detail as you like.
+
+        A maintainer reads your proposal first. If it is in scope, they apply the
+        `approved-for-drafting` label, and an assistant opens a pull request implementing it.
+        You will be asked to check that the pull request actually says what you meant.
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What are you proposing?
+      description: >
+        What should the project do differently, and what happens today that is wrong,
+        missing, or incomplete? Write it the way you would explain it to a colleague.
+      placeholder: >
+        Aftershock rates in the first 24 hours are being fit with a single Omori decay for
+        every sequence, but shallow strike-slip sequences decay measurably faster than deep
+        thrust ones. Fitting one p-value across both underestimates early-window risk for
+        thrust events.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: What is this based on?
+      description: >
+        Papers (DOIs or links), datasets, catalogs, guidelines, or your own field
+        experience. Firsthand experience is legitimate evidence — say so and describe it.
+        Every claim in the resulting pull request must be traceable to something here.
+      placeholder: |
+        - Utsu et al. (1995), https://doi.org/10.4294/jpe1952.43.1
+        - ISC-GEM catalog, events M>=6 1990-2020
+        - Firsthand: 12 years operating a regional network in the Andes; we always
+          retuned the decay parameter by mechanism and never published why.
+    validations:
+      required: true
+
+  - type: textarea
+    id: test
+    attributes:
+      label: How would we know if you are right?
+      description: >
+        What measurement, comparison, or check would show this is an improvement rather
+        than a preference? If you are not sure, say so — a maintainer will help define it.
+      placeholder: >
+        Split the catalog by focal mechanism, fit the decay parameter separately per class,
+        and compare held-out log-likelihood against the single-parameter baseline. If the
+        split model does not beat the baseline out of sample, I am wrong.
+    validations:
+      required: true
+
+  - type: input
+    id: scope
+    attributes:
+      label: Which part of the project does this touch?
+      description: Optional. A directory, a file, or a plain description — a guess is fine.
+      placeholder: the aftershock baseline, probably baselines/
+
+  - type: dropdown
+    id: confidence
+    attributes:
+      label: How settled is this in your field?
+      options:
+        - Established — widely accepted, this project is simply behind
+        - Supported — good evidence, some open debate
+        - Plausible — my reading of the evidence, not yet consensus
+        - Speculative — a hypothesis worth testing
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Before submitting
+      options:
+        - label: >
+            I have not included patient data, personally identifying information, embargoed
+            data, or anything I am not free to share publicly.
+          required: true
+        - label: >
+            I understand the resulting pull request will credit me and that I may be asked
+            to confirm it represents my intent.
+          required: true
