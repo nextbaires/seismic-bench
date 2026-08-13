@@ -13,6 +13,16 @@ on:
   issues:
     types: [labeled]
 
+# Required. This repository's default GITHUB_TOKEN is read-only, and a called
+# workflow cannot request more than its caller was granted — without this block
+# the run dies at startup, before the label gate is even evaluated, with no job
+# and no log to read. Granted here rather than by loosening the repository-wide
+# default, so every other workflow stays read-only.
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   draft:
     if: >
