@@ -28,29 +28,30 @@ jobs:
           enable-cache: true
           python-version: ${{ matrix.python-version }}
 
-      # Into a venv, not --system: the runner's interpreter is externally
-      # managed (PEP 668) and rejects --system outright.
+      # setup-uv with python-version already created .venv and exported
+      # VIRTUAL_ENV, so `uv venv` here would fail on the existing directory and
+      # `uv pip install --system` would hit PEP 668 on the runner's managed
+      # interpreter. Install into that venv and call its binaries directly —
+      # same thing that runs locally, no resolution ambiguity.
       - name: Install
-        run: |
-          uv venv
-          uv pip install -e ".[dev]"
+        run: uv pip install -e ".[dev]"
 
       - name: Lint
-        run: uv run ruff check .
+        run: .venv/bin/ruff check .
 
       # Everything below runs against the committed sample catalog. No network,
       # no credentials — if CI needs the internet to verify a benchmark, the
       # benchmark is not reproducible.
       - name: Test
-        run: uv run pytest -q
+        run: .venv/bin/pytest -q
 
       - name: Run baselines end to end
         run: |
-          uv run python -m seismic_bench.bench.run --model poisson
-          uv run python -m seismic_bench.bench.run --model etas
+          .venv/bin/python -m seismic_bench.bench.run --model poisson
+          .venv/bin/python -m seismic_bench.bench.run --model etas
 
       - name: Rebuild leaderboard
-        run: uv run python -m seismic_bench.leaderboard
+        run: .venv/bin/python -m seismic_bench.leaderboard
 
       - name: Fail if the leaderboard drifted
         # The committed results.json must match what the code produces from the
