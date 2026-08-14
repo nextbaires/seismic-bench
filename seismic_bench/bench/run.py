@@ -29,6 +29,7 @@ from .split import rolling_windows
 #: `--model package.module:ClassName` to run without touching the registry.
 REGISTRY: dict[str, str] = {
     "poisson": "seismic_bench.baselines.poisson:PoissonBaseline",
+    "poisson-adaptive": "seismic_bench.baselines.adaptive:AdaptivePoissonBaseline",
     "etas": "seismic_bench.baselines.etas:ETASBaseline",
 }
 
