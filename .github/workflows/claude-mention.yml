@@ -1,0 +1,51 @@
+# Answers @claude on issues and pull requests — from maintainers only.
+#
+# The stock workflow that `/install-github-app` writes has no author gate. On a
+# public repository that means any account on the internet can start a billed
+# agent run by typing @claude in a comment. That is the same hole the expert
+# loop's label gate exists to close, so this reproduces the same rule: a
+# maintainer has to be the one who asks.
+#
+# `author_association` is set by GitHub from the commenter's relationship to the
+# repository and cannot be spoofed by comment text. Everyone else — CONTRIBUTOR,
+# FIRST_TIME_CONTRIBUTOR, NONE — is ignored silently, with no run started.
+
+name: Claude mention
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  respond:
+    if: >
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association || github.event.review.author_association) &&
+      contains(github.event.comment.body || github.event.review.body, '@claude')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      # Read-only. This answers questions and reviews diffs; it does not write
+      # code. Anything that changes the repository goes through the expert loop,
+      # where a maintainer applies a label and CODEOWNERS reviews the result.
+      contents: read
+      pull-requests: read
+      issues: read
+      actions: read
+      # Exchanged for a GitHub App installation token. Without it the action
+      # retries three times and dies on ACTIONS_ID_TOKEN_REQUEST_URL.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Lets it read CI results when asked why a check failed.
+          additional_permissions: |
+            actions: read
