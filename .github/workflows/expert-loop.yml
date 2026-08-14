@@ -22,6 +22,10 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  # claude-code-action trades this for a GitHub App installation token. That is
+  # also what makes the drafted pull request trigger CI — a pull request opened
+  # with the plain GITHUB_TOKEN does not.
+  id-token: write
 
 jobs:
   draft:
